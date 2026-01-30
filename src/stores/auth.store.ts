@@ -9,7 +9,7 @@ import {
   signOut as firebaseSignOut,
   type User
 } from 'firebase/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '@/services/firebase'
 import type { UserProfile, OnboardingData } from '@/types'
 
@@ -176,8 +176,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function verifyAge() {
     isAgeVerified.value = true
     if (user.value && profile.value) {
-      await setDoc(doc(db, 'users', user.value.uid), {
-        ...profile.value,
+      await updateDoc(doc(db, 'users', user.value.uid), {
         isAgeVerified: true,
         ageVerifiedAt: new Date().toISOString()
       })
@@ -203,10 +202,7 @@ export const useAuthStore = defineStore('auth', () => {
       completedAt: new Date().toISOString()
     }
 
-    await setDoc(doc(db, 'users', user.value.uid), {
-      ...profile.value,
-      onboarding
-    })
+    await updateDoc(doc(db, 'users', user.value.uid), { onboarding })
     profile.value.onboarding = onboarding
   }
 
