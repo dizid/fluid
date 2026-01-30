@@ -88,7 +88,13 @@ export const useAuthStore = defineStore('auth', () => {
       const docRef = doc(db, 'users', uid)
       const docSnap = await getDoc(docRef)
       if (docSnap.exists()) {
-        profile.value = docSnap.data() as UserProfile
+        const data = docSnap.data()
+        // Ensure premium fields have defaults (may not exist for older users)
+        profile.value = {
+          ...data,
+          isPremium: data.isPremium ?? false,
+          premiumActivatedAt: data.premiumActivatedAt ?? null
+        } as UserProfile
       }
     } catch (e) {
       console.error('Error loading profile:', e)
@@ -96,21 +102,25 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Create user profile in Firestore
+  // Note: isPremium fields are NOT set here - only the webhook can set those
   async function createProfile(uid: string, email: string) {
-    const newProfile: UserProfile = {
+    const newProfile = {
       uid,
       email,
       createdAt: new Date().toISOString(),
       isAgeVerified: false,
       ageVerifiedAt: null,
-      isPremium: false,
-      premiumActivatedAt: null,
       onboarding: null,
       partnerId: null,
       partnerLinkCode: null
     }
     await setDoc(doc(db, 'users', uid), newProfile)
-    profile.value = newProfile
+    // Set local profile with defaults for premium fields
+    profile.value = {
+      ...newProfile,
+      isPremium: false,
+      premiumActivatedAt: null
+    }
   }
 
   // Sign up with email/password
