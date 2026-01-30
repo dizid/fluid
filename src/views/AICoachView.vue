@@ -3,8 +3,42 @@ import { ref, computed, onMounted, nextTick } from 'vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import { useChatStore } from '@/stores/chat.store'
+import { useAuthStore } from '@/stores/auth.store'
 
 const chatStore = useChatStore()
+const authStore = useAuthStore()
+
+const isPremium = computed(() => authStore.isPremium)
+const isUpgrading = ref(false)
+const upgradeError = ref('')
+
+async function handleUpgrade() {
+  isUpgrading.value = true
+  upgradeError.value = ''
+
+  try {
+    const response = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: authStore.userId,
+        userEmail: authStore.profile?.email
+      })
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to start checkout')
+    }
+
+    // Redirect to Stripe Checkout
+    window.location.href = data.url
+  } catch (e) {
+    upgradeError.value = e instanceof Error ? e.message : 'Something went wrong'
+    isUpgrading.value = false
+  }
+}
 const inputMessage = ref('')
 const chatContainer = ref<HTMLElement | null>(null)
 const error = ref('')
@@ -69,7 +103,64 @@ function handleKeydown(e: KeyboardEvent) {
         <p>Ask questions about anatomy, communication, or anything covered in the modules.</p>
       </header>
 
-      <BaseCard padding="none" class="chat-card">
+      <!-- Paywall for non-premium users -->
+      <BaseCard v-if="!isPremium" class="paywall-card">
+        <div class="paywall-content">
+          <div class="paywall-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h2>Unlock Your Personal AI Coach</h2>
+          <p class="paywall-description">
+            Get instant, personalized answers to your questions about anatomy, arousal, communication, and more.
+          </p>
+
+          <ul class="paywall-benefits">
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>Unlimited conversations with your AI coach</span>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>Science-based, judgment-free guidance</span>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>Private and secure - your conversations stay yours</span>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>One-time purchase - lifetime access</span>
+            </li>
+          </ul>
+
+          <p v-if="upgradeError" class="paywall-error">{{ upgradeError }}</p>
+
+          <BaseButton
+            variant="primary"
+            size="lg"
+            :loading="isUpgrading"
+            :disabled="isUpgrading"
+            @click="handleUpgrade"
+          >
+            Unlock AI Coach
+          </BaseButton>
+
+          <p class="paywall-note">Secure payment powered by Stripe</p>
+        </div>
+      </BaseCard>
+
+      <!-- Chat interface for premium users -->
+      <BaseCard v-else padding="none" class="chat-card">
         <!-- Messages -->
         <div ref="chatContainer" class="chat-messages">
           <!-- Welcome message if no messages -->
@@ -167,6 +258,70 @@ function handleKeydown(e: KeyboardEvent) {
 </template>
 
 <style scoped>
+/* Paywall Styles */
+.paywall-card {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.paywall-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.paywall-icon {
+  color: var(--color-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.paywall-content h2 {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--space-sm);
+}
+
+.paywall-description {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xl);
+  max-width: 380px;
+}
+
+.paywall-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-xl) 0;
+  text-align: left;
+  width: 100%;
+}
+
+.paywall-benefits li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  color: var(--color-text-secondary);
+}
+
+.paywall-benefits svg {
+  flex-shrink: 0;
+  color: var(--color-success);
+}
+
+.paywall-error {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-md);
+}
+
+.paywall-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-md);
+}
+
+/* Chat Styles */
 .coach-page {
   display: flex;
   flex-direction: column;

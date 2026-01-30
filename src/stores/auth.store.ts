@@ -13,6 +13,10 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { auth, db } from '@/services/firebase'
 import type { UserProfile, OnboardingData } from '@/types'
 
+// Beta tester access code
+const BETA_ACCESS_CODE = 'test123'
+const BETA_STORAGE_KEY = 'fluid_beta_access'
+
 export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref<User | null>(null)
@@ -20,26 +24,61 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoading = ref(true)
   const error = ref<string | null>(null)
   const isAgeVerified = ref(false)
+  const isBetaTester = ref(false)
 
   // Getters
   const isAuthenticated = computed(() => !!user.value)
   const userId = computed(() => user.value?.uid ?? null)
   const hasCompletedOnboarding = computed(() => profile.value?.onboarding?.completed ?? false)
 
+  // Premium access: paid users OR beta testers
+  const isPremium = computed(() => profile.value?.isPremium || isBetaTester.value)
+
+  // Check for beta access code in URL and localStorage
+  function checkBetaAccess() {
+    // Check localStorage first
+    if (localStorage.getItem(BETA_STORAGE_KEY) === 'true') {
+      isBetaTester.value = true
+      return
+    }
+
+    // Check URL for ?test=test123
+    const urlParams = new URLSearchParams(window.location.search)
+    const testCode = urlParams.get('test')
+
+    if (testCode === BETA_ACCESS_CODE) {
+      isBetaTester.value = true
+      localStorage.setItem(BETA_STORAGE_KEY, 'true')
+      // Clean up URL without reload
+      const url = new URL(window.location.href)
+      url.searchParams.delete('test')
+      window.history.replaceState({}, '', url.pathname + url.search + url.hash)
+    }
+  }
+
   // Initialize auth listener
   function init() {
+    // Check beta access on init
+    checkBetaAccess()
+
     onAuthStateChanged(auth, async (firebaseUser) => {
-      user.value = firebaseUser
-      if (firebaseUser) {
-        await loadProfile(firebaseUser.uid)
-        // Restore age verification from profile
-        if (profile.value?.isAgeVerified) {
-          isAgeVerified.value = true
+      try {
+        user.value = firebaseUser
+        if (firebaseUser) {
+          await loadProfile(firebaseUser.uid)
+          // Restore age verification from profile
+          if (profile.value?.isAgeVerified) {
+            isAgeVerified.value = true
+          }
+        } else {
+          profile.value = null
         }
-      } else {
-        profile.value = null
+      } catch (e) {
+        console.error('Error in auth state change:', e)
+        error.value = e instanceof Error ? e.message : 'Authentication error'
+      } finally {
+        isLoading.value = false
       }
-      isLoading.value = false
     })
   }
 
@@ -137,6 +176,13 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  // Refresh profile from Firestore (useful after payment)
+  async function refreshProfile() {
+    if (user.value) {
+      await loadProfile(user.value.uid)
+    }
+  }
+
   // Save onboarding data
   async function saveOnboarding(data: Omit<OnboardingData, 'completed' | 'completedAt'>) {
     if (!user.value || !profile.value) return
@@ -161,10 +207,12 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading,
     error,
     isAgeVerified,
+    isBetaTester,
     // Getters
     isAuthenticated,
     userId,
     hasCompletedOnboarding,
+    isPremium,
     // Actions
     init,
     signUp,
@@ -172,7 +220,8 @@ export const useAuthStore = defineStore('auth', () => {
     signInWithGoogle,
     signOut,
     verifyAge,
-    saveOnboarding
+    saveOnboarding,
+    refreshProfile
   }
 }, {
   persist: {

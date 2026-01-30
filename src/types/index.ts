@@ -10,6 +10,11 @@ export interface UserProfile {
   onboarding: OnboardingData | null
   partnerId: string | null
   partnerLinkCode: string | null
+  // Stripe payment data (added by webhook after purchase)
+  stripeSessionId?: string | null
+  stripeCustomerId?: string | null
+  premiumRevokedAt?: string | null
+  premiumRevokeReason?: string | null
 }
 
 export interface OnboardingData {

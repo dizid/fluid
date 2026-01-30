@@ -54,6 +54,16 @@ const router = createRouter({
       meta: { guestOnly: true }
     },
     {
+      path: '/checkout/success',
+      name: 'checkout-success',
+      component: () => import('@/views/CheckoutSuccessView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/checkout/cancel',
+      redirect: '/coach'
+    },
+    {
       path: '/:pathMatch(.*)*',
       redirect: '/'
     }

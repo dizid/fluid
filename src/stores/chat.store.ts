@@ -58,7 +58,7 @@ export const useChatStore = defineStore('chat', () => {
       userMessage.id = userDocRef.id
 
       // Call AI coach API
-      const response = await fetch('/.netlify/functions/ai-coach', {
+      const response = await fetch('/api/ai-coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

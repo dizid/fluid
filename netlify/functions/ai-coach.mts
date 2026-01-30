@@ -1,5 +1,9 @@
 import type { Context } from "@netlify/functions"
 import Anthropic from "@anthropic-ai/sdk"
+import { config as dotenvConfig } from "dotenv"
+
+// Load .env for local development
+dotenvConfig()
 
 // Educational guardrails system prompt
 const SYSTEM_PROMPT = `You are an educational AI coach for Fluid Intimacy, a sexual wellness education app focused on helping people understand their bodies and improve intimate communication.
@@ -52,8 +56,8 @@ export default async (req: Request, context: Context) => {
     })
   }
 
-  // Get API key from environment
-  const apiKey = Netlify.env.get("ANTHROPIC_API_KEY")
+  // Get API key from environment (Netlify.env for prod, process.env for local dev)
+  const apiKey = Netlify.env.get("ANTHROPIC_API_KEY") || process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
     console.error("ANTHROPIC_API_KEY not configured")
     return new Response(JSON.stringify({ error: "AI service not configured" }), {
