@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { collection, addDoc, query, orderBy, getDocs, Timestamp } from 'firebase/firestore'
 import { db } from '@/services/firebase'
 import { useAuthStore } from './auth.store'
+import { useProgressStore } from './progress.store'
 import type { ChatMessage } from '@/types'
 
 export const useChatStore = defineStore('chat', () => {
@@ -57,6 +58,25 @@ export const useChatStore = defineStore('chat', () => {
       })
       userMessage.id = userDocRef.id
 
+      // Gather user context for personalized AI responses
+      const progressStore = useProgressStore()
+      const userContext: Record<string, unknown> = {}
+
+      if (authStore.profile?.onboarding) {
+        userContext.userType = authStore.profile.onboarding.userType
+        userContext.goals = authStore.profile.onboarding.goals
+      }
+
+      const completedModules = Object.entries(progressStore.progress.modules)
+        .filter(([, mod]) => mod.completed)
+        .map(([id]) => id)
+
+      if (completedModules.length > 0) {
+        userContext.completedModules = completedModules
+      }
+
+      userContext.overallProgress = progressStore.overallProgress
+
       // Call AI coach API
       const response = await fetch('/api/ai-coach', {
         method: 'POST',
@@ -66,7 +86,8 @@ export const useChatStore = defineStore('chat', () => {
             role: m.role,
             content: m.content
           })),
-          userId: authStore.userId
+          userId: authStore.userId,
+          userContext
         })
       })
 

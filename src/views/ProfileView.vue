@@ -92,12 +92,6 @@ async function handleSignOut() {
               <span>Email</span>
               <span>{{ profile?.email }}</span>
             </div>
-            <div class="setting-item">
-              <span>Premium Status</span>
-              <span :class="profile?.isPremium ? 'status-active' : 'status-inactive'">
-                {{ profile?.isPremium ? 'Active' : 'Free Tier' }}
-              </span>
-            </div>
           </div>
           <BaseButton
             variant="outline"
@@ -251,15 +245,6 @@ h3 {
 
 .setting-item span:first-child {
   color: var(--color-text-secondary);
-}
-
-.status-active {
-  color: var(--color-success);
-  font-weight: var(--font-weight-medium);
-}
-
-.status-inactive {
-  color: var(--color-text-muted);
 }
 
 .sign-out-btn {

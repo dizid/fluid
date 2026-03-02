@@ -1,5 +1,5 @@
 import type { Context } from "@netlify/functions"
-import Anthropic from "@anthropic-ai/sdk"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 import { config as dotenvConfig } from "dotenv"
 
 // Load .env for local development
@@ -57,9 +57,9 @@ export default async (req: Request, context: Context) => {
   }
 
   // Get API key from environment (Netlify.env for prod, process.env for local dev)
-  const apiKey = Netlify.env.get("ANTHROPIC_API_KEY") || process.env.ANTHROPIC_API_KEY
+  const apiKey = Netlify.env.get("GOOGLE_AI_API_KEY") || process.env.GOOGLE_AI_API_KEY
   if (!apiKey) {
-    console.error("ANTHROPIC_API_KEY not configured")
+    console.error("GOOGLE_AI_API_KEY not configured")
     return new Response(JSON.stringify({ error: "AI service not configured" }), {
       status: 500,
       headers: { "Content-Type": "application/json" }
@@ -68,7 +68,7 @@ export default async (req: Request, context: Context) => {
 
   try {
     const body = await req.json()
-    const { messages, userId } = body
+    const { messages, userId, userContext } = body
 
     if (!userId) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -84,34 +84,54 @@ export default async (req: Request, context: Context) => {
       })
     }
 
-    // Initialize Anthropic client
-    const anthropic = new Anthropic({ apiKey })
+    // Build personalized system prompt by appending user context if provided
+    let systemPrompt = SYSTEM_PROMPT
+    if (userContext) {
+      const contextLines: string[] = []
+      if (userContext.userType) {
+        contextLines.push(`The user is in ${userContext.userType} mode.`)
+      }
+      if (userContext.goals?.length) {
+        contextLines.push(`Their learning goals: ${userContext.goals.join(', ')}.`)
+      }
+      if (userContext.completedModules?.length) {
+        contextLines.push(`They have completed these modules: ${userContext.completedModules.join(', ')}.`)
+      }
+      if (userContext.overallProgress !== undefined) {
+        contextLines.push(`Their overall course progress: ${userContext.overallProgress}%.`)
+      }
+      if (contextLines.length > 0) {
+        systemPrompt += `\n\nUSER CONTEXT:\n${contextLines.join('\n')}\nUse this context to personalize your responses. Reference their goals and progress where relevant.`
+      }
+    }
 
-    // Format messages for Claude
-    const formattedMessages = messages.map((m: { role: string; content: string }) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content
-    }))
-
-    // Call Claude API
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: formattedMessages
+    // Initialize Gemini client
+    const genAI = new GoogleGenerativeAI(apiKey)
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash",
+      systemInstruction: systemPrompt
     })
 
-    // Extract text response
-    const assistantMessage = response.content[0]?.type === 'text'
-      ? response.content[0].text
-      : "I'm sorry, I couldn't generate a response. Please try again."
+    // Convert message format: Anthropic uses "assistant", Gemini uses "model"
+    const history = messages.slice(0, -1).map((m: { role: string; content: string }) => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }]
+    }))
+
+    const lastMessage = messages[messages.length - 1]
+
+    const chat = model.startChat({
+      history,
+      generationConfig: {
+        maxOutputTokens: 1024
+      }
+    })
+
+    const result = await chat.sendMessage(lastMessage.content)
+    const assistantMessage = result.response.text()
 
     return new Response(JSON.stringify({
-      message: assistantMessage,
-      usage: {
-        input_tokens: response.usage.input_tokens,
-        output_tokens: response.usage.output_tokens
-      }
+      message: assistantMessage
     }), {
       status: 200,
       headers: { "Content-Type": "application/json" }
@@ -121,7 +141,7 @@ export default async (req: Request, context: Context) => {
     console.error("AI Coach error:", error)
 
     // Handle rate limiting
-    if (error instanceof Anthropic.RateLimitError) {
+    if (error instanceof Error && error.message?.includes('429')) {
       return new Response(JSON.stringify({
         error: "The AI coach is experiencing high demand. Please try again in a moment."
       }), {
@@ -131,7 +151,7 @@ export default async (req: Request, context: Context) => {
     }
 
     // Handle other API errors
-    if (error instanceof Anthropic.APIError) {
+    if (error instanceof Error && (error.message?.includes('API') || error.message?.includes('fetch'))) {
       return new Response(JSON.stringify({
         error: "There was an issue connecting to the AI service. Please try again."
       }), {
