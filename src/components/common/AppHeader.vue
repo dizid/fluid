@@ -1,17 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth.store'
-
-const router = useRouter()
-const authStore = useAuthStore()
-
-const isLoggedIn = computed(() => authStore.isAuthenticated)
-
-async function handleSignOut() {
-  await authStore.signOut()
-  router.push('/login')
-}
+// Open course (T-0594): no accounts, so no profile, coach or sign-out links.
 </script>
 
 <template>
@@ -21,13 +9,8 @@ async function handleSignOut() {
         <span class="header__logo-text">Fluid Intimacy</span>
       </router-link>
 
-      <nav v-if="isLoggedIn" class="header__nav">
+      <nav class="header__nav">
         <router-link to="/modules" class="header__link">Modules</router-link>
-        <router-link to="/coach" class="header__link">AI Coach</router-link>
-        <router-link to="/profile" class="header__link">Profile</router-link>
-        <button class="header__link header__link--button" @click="handleSignOut">
-          Sign Out
-        </button>
       </nav>
     </div>
   </header>

@@ -3,21 +3,18 @@ import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import AppHeader from '@/components/common/AppHeader.vue'
 import AgeGate from '@/components/auth/AgeGate.vue'
-import { useAuthStore } from '@/stores/auth.store'
+import { useVisitorStore } from '@/stores/visitor.store'
 
 const route = useRoute()
-const authStore = useAuthStore()
+const visitorStore = useVisitorStore()
 
 const showAgeGate = computed(() => {
-  return route.query.ageGate === 'true' && !authStore.isAgeVerified
+  return route.query.ageGate === 'true' && !visitorStore.isAgeVerified
 })
 
-const showHeader = computed(() => {
-  return authStore.isAuthenticated && route.name !== 'login'
-})
 
 // Remove ageGate query param after verification
-watch(() => authStore.isAgeVerified, (verified) => {
+watch(() => visitorStore.isAgeVerified, (verified) => {
   if (verified && route.query.ageGate) {
     const { ageGate, ...rest } = route.query
     history.replaceState({}, '', route.path + (Object.keys(rest).length ? '?' + new URLSearchParams(rest as Record<string, string>).toString() : ''))
@@ -27,7 +24,7 @@ watch(() => authStore.isAgeVerified, (verified) => {
 
 <template>
   <div class="app">
-    <AppHeader v-if="showHeader" />
+    <AppHeader />
     <main class="app__main">
       <RouterView />
     </main>

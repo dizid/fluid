@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseCard from '@/components/common/BaseCard.vue'
 import { useProgressStore } from '@/stores/progress.store'
@@ -7,10 +6,6 @@ import { modules } from '@/content/modules'
 
 const router = useRouter()
 const progressStore = useProgressStore()
-
-onMounted(() => {
-  progressStore.loadProgress()
-})
 
 function getModuleIcon(icon: string) {
   const icons: Record<string, string> = {

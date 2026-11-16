@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import { useProgressStore } from '@/stores/progress.store'
@@ -26,10 +26,6 @@ const prevLesson = computed(() => {
   if (!module.value || !lesson.value) return null
   const currentIndex = module.value.lessons.findIndex(l => l.id === lessonId.value)
   return module.value.lessons[currentIndex - 1] ?? null
-})
-
-onMounted(() => {
-  progressStore.loadProgress()
 })
 
 async function completeLesson() {

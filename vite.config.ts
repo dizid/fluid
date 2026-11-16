@@ -3,18 +3,20 @@ import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 import netlify from '@netlify/vite-plugin'
 import { fileURLToPath, URL } from 'node:url'
+import { prerenderPlugin } from './build/prerender'
 
 export default defineConfig({
   plugins: [
     vue(),
     netlify(),
+    prerenderPlugin(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'robots.txt'],
       manifest: {
         name: 'Fluid Intimacy',
         short_name: 'Fluid',
-        description: 'A private, science-based intimacy education coach',
+        description: 'A free, private, science-based intimacy course',
         theme_color: '#6B8E7B',
         background_color: '#FDF8F3',
         display: 'standalone',
@@ -42,20 +44,7 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'firestore-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24
-              }
-            }
-          }
-        ]
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}']
       },
       devOptions: {
         enabled: true

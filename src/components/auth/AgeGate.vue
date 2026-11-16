@@ -3,16 +3,16 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseModal from '@/components/common/BaseModal.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
-import { useAuthStore } from '@/stores/auth.store'
+import { useVisitorStore } from '@/stores/visitor.store'
 
 const router = useRouter()
-const authStore = useAuthStore()
+const visitorStore = useVisitorStore()
 
 const isConfirmed = ref(false)
 
 async function handleConfirm() {
   if (!isConfirmed.value) return
-  await authStore.verifyAge()
+  visitorStore.verifyAge()
   // Re-navigate to trigger route guards
   router.replace(router.currentRoute.value.fullPath.replace('?ageGate=true', ''))
 }

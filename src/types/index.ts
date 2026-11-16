@@ -1,31 +1,3 @@
-// User types
-export interface UserProfile {
-  uid: string
-  email: string
-  createdAt: string
-  isAgeVerified: boolean
-  ageVerifiedAt: string | null
-  isPremium: boolean
-  premiumActivatedAt: string | null
-  onboarding: OnboardingData | null
-  partnerId: string | null
-  partnerLinkCode: string | null
-  // Stripe payment data (added by webhook after purchase)
-  stripeSessionId?: string | null
-  stripeCustomerId?: string | null
-  premiumRevokedAt?: string | null
-  premiumRevokeReason?: string | null
-}
-
-export interface OnboardingData {
-  completed: boolean
-  userType: 'solo' | 'couple'
-  goals: string[]
-  concerns: string[]
-  consentAccepted: boolean
-  completedAt: string | null
-}
-
 // Module types
 export interface Module {
   id: string
@@ -73,14 +45,6 @@ export interface ModuleProgress {
 export interface UserProgress {
   modules: Record<string, ModuleProgress>
   lastActiveAt: string
-}
-
-// Chat types
-export interface ChatMessage {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  createdAt: string
 }
 
 // Journal types

@@ -14,7 +14,6 @@ const moduleId = computed(() => route.params.moduleId as string)
 const module = computed(() => getModule(moduleId.value))
 
 onMounted(() => {
-  progressStore.loadProgress()
   if (module.value) {
     progressStore.startModule(moduleId.value)
   }

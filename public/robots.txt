@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://fluidintimacy.com/sitemap.xml
+Sitemap: https://fluid33.netlify.app/sitemap.xml

@@ -1,8 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { db } from '@/services/firebase'
-import { useAuthStore } from './auth.store'
 import type { UserProgress, ModuleProgress } from '@/types'
 
 export const useProgressStore = defineStore('progress', () => {
@@ -31,34 +28,10 @@ export const useProgressStore = defineStore('progress', () => {
   })
 
   // Actions
-  async function loadProgress() {
-    const authStore = useAuthStore()
-    if (!authStore.userId) return
-
-    isLoading.value = true
-    try {
-      const docRef = doc(db, 'progress', authStore.userId)
-      const docSnap = await getDoc(docRef)
-      if (docSnap.exists()) {
-        progress.value = docSnap.data() as UserProgress
-      }
-    } catch (e) {
-      console.error('Error loading progress:', e)
-    } finally {
-      isLoading.value = false
-    }
-  }
-
-  async function saveProgress() {
-    const authStore = useAuthStore()
-    if (!authStore.userId) return
-
+  // Progress is saved in this browser only (pinia-plugin-persistedstate, persist: true
+  // below); there are no accounts since T-0594. This just stamps the last activity.
+  function saveProgress() {
     progress.value.lastActiveAt = new Date().toISOString()
-    try {
-      await setDoc(doc(db, 'progress', authStore.userId), progress.value)
-    } catch (e) {
-      console.error('Error saving progress:', e)
-    }
   }
 
   async function startModule(moduleId: string) {
@@ -70,7 +43,7 @@ export const useProgressStore = defineStore('progress', () => {
         completed: false,
         completedAt: null
       }
-      await saveProgress()
+      saveProgress()
     }
   }
 
@@ -94,7 +67,7 @@ export const useProgressStore = defineStore('progress', () => {
       moduleProgress.completedAt = new Date().toISOString()
     }
 
-    await saveProgress()
+    saveProgress()
   }
 
   return {
@@ -106,7 +79,6 @@ export const useProgressStore = defineStore('progress', () => {
     isLessonCompleted,
     overallProgress,
     // Actions
-    loadProgress,
     startModule,
     completeLesson
   }
