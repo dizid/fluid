@@ -11,6 +11,7 @@
 
       <nav class="header__nav">
         <router-link to="/modules" class="header__link">Modules</router-link>
+        <router-link to="/guide" class="header__link">Personal guide</router-link>
       </nav>
     </div>
   </header>

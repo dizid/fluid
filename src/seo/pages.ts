@@ -31,6 +31,13 @@ const MODULES: PageMeta = {
   description: `${modules.length} free modules: ${modules.map(m => m.title).join(', ')}. Short lessons, no account, at your own pace.`
 }
 
+const GUIDE: PageMeta = {
+  path: '/guide',
+  title: `Free quiz: your personal intimacy guide | ${SITE_NAME}`,
+  description:
+    'Answer five short questions and get free lesson picks for your focus. Optional: a private PDF guide with a personal plan, built from your answers.'
+}
+
 function modulePage(moduleId: string): PageMeta | null {
   const module = modules.find(m => m.id === moduleId)
   if (!module) return null
@@ -62,6 +69,7 @@ export function getPageMeta(path: string): PageMeta | null {
   const clean = path.replace(/\/+$/, '') || '/'
   if (clean === '/') return HOME
   if (clean === '/modules') return MODULES
+  if (clean === '/guide') return GUIDE
   const parts = clean.split('/').filter(Boolean)
   if (parts[0] === 'modules' && parts.length === 2 && parts[1]) return modulePage(parts[1])
   if (parts[0] === 'modules' && parts[2] === 'lessons' && parts.length === 4 && parts[1] && parts[3]) {
@@ -72,7 +80,7 @@ export function getPageMeta(path: string): PageMeta | null {
 
 /** Every public page, in reading order (home, overview, then each module and its lessons). */
 export function allPublicPages(): PageMeta[] {
-  const pages: PageMeta[] = [HOME, MODULES]
+  const pages: PageMeta[] = [HOME, MODULES, GUIDE]
   for (const module of [...modules].sort((a, b) => a.order - b.order)) {
     const page = modulePage(module.id)
     if (page) pages.push(page)

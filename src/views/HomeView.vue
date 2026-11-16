@@ -12,6 +12,10 @@ const progress = computed(() => progressStore.overallProgress)
 function navigateToModules() {
   router.push('/modules')
 }
+
+function navigateToGuide() {
+  router.push('/guide')
+}
 </script>
 
 <template>
@@ -50,6 +54,16 @@ function navigateToModules() {
             </div>
             <h3>Continue Learning</h3>
             <p>Pick up where you left off in your modules.</p>
+          </BaseCard>
+
+          <BaseCard padding="lg" hoverable class="action-card" @click="navigateToGuide">
+            <div class="action-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3>Your Personal Guide</h3>
+            <p>Five quick questions, free lesson picks, and an optional PDF plan made for you.</p>
           </BaseCard>
 
         </div>

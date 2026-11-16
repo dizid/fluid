@@ -4,6 +4,7 @@ import type { Plugin } from 'vite'
 import { modules } from '../src/content/modules'
 import { allPublicPages, SITE_NAME, SITE_URL, type PageMeta } from '../src/seo/pages'
 import type { LessonContent } from '../src/types'
+import { QUIZ } from '../src/guide/quiz'
 
 /**
  * Build step (T-0594): after `vite build`, write one static HTML file per public
@@ -76,10 +77,13 @@ function moduleList(): string {
 /** The page's own text, as plain semantic HTML. */
 function pageBody(page: PageMeta): string {
   const parts = page.path.split('/').filter(Boolean)
-  const nav = `<nav><a href="/">${SITE_NAME}</a> · <a href="/modules">Modules</a></nav>`
+  const nav = `<nav><a href="/">${SITE_NAME}</a> · <a href="/modules">Modules</a> · <a href="/guide">Personal guide</a></nav>`
 
   if (page.path === '/') {
     return `${nav}<main><h1>${escapeHtml(SITE_NAME)}</h1><p>${escapeHtml(page.description)}</p><h2>Modules</h2>${moduleList()}</main>`
+  }
+  if (page.path === '/guide') {
+    return `${nav}<main><h1>Your personal guide</h1><p>${escapeHtml(page.description)}</p><ol>${QUIZ.map(q => `<li>${escapeHtml(q.question)}</li>`).join('')}</ol></main>`
   }
   if (page.path === '/modules') {
     return `${nav}<main><h1>Learning modules</h1><p>Progress through each module at your own pace. No rush, no pressure.</p>${moduleList()}</main>`

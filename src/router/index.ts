@@ -36,6 +36,18 @@ const router = createRouter({
       component: () => import('@/views/LessonView.vue'),
       meta: { requiresAge: true }
     },
+    {
+      path: '/guide',
+      name: 'guide',
+      component: () => import('@/views/GuideQuizView.vue'),
+      meta: { requiresAge: true }
+    },
+    {
+      // Stripe's return page after paying; the buyer already confirmed 18+.
+      path: '/guide/download',
+      name: 'guide-download',
+      component: () => import('@/views/GuideDownloadView.vue')
+    },
     // Old account-era pages (login, AI coach, profile, onboarding, checkout)
     // no longer exist; send old bookmarks to the course instead of a blank page.
     { path: '/login', redirect: '/' },
