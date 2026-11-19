@@ -1,19 +1,19 @@
 # Fluid Intimacy - Project Instructions
 
-## Status (T-0594, Nov 16 2026: branch keepbusy/T-0594-open-course, NOT live)
+## Status (LIVE since Nov 19 2026, T-0619: open course + paid PDF guide, merged to main)
 
 - Open course: no login, no accounts, no AI coach. 18+ confirmation kept (stored in the browser). Lesson progress is local only.
-- Paid products (built, not live): free 5-question quiz at `/guide`, then a personal PDF guide made from the answers (no AI at run time).
+- Paid products (live since Nov 19 2026): free 5-question quiz at `/guide`, then a personal PDF guide made from the answers (no AI at run time).
   Prices live in one place, `src/guide/quiz.ts`: guide EUR 12, guide + deep dive + 30-day plan EUR 19, couples edition +EUR 5.
 - History: archived 2026-09-15 after the Firebase project `fluid-b6251` was deleted from the Google account (all logins broke). The open course no longer needs Firebase at all.
-- Going live needs Marc: unpause the Netlify site, OK the Stripe sales on the shared account, the name question (fluidintimacy.com is someone else's couples-course business), and terms/contact text for paid products. See ~/AI-COMPANY/output/marc-ok-needed.md (T-0594).
+- Marc's OK Nov 19 2026 (T-0619): keep the name Fluid, repo unarchived, site unpaused, open course live. Still open: no terms/withdrawal-right text or seller details near the paid PDF yet (needs Marc's OK on the wording).
 
 ## Deployment
 
-- Netlify site: `fluid33` (site ID `4904bea0-d314-432e-8b5a-42bf8e3084bc`), URL `fluid33.netlify.app`. The site is DISABLED (paused) since the archive: deploys upload but never go live, not even drafts.
+- Netlify site: `fluid33` (site ID `4904bea0-d314-432e-8b5a-42bf8e3084bc`), URL `fluid33.netlify.app`. Unpaused Nov 19 2026 (Netlify API `PUT /api/v1/sites/<id>/enable`; `updateSite {disabled:false}` is ignored). Auto-builds on push to main are still on: put `[skip netlify]` in the newest commit and laptop-deploy.
 - Laptop deploy only (no Netlify build minutes): `npm run build`, then `netlify deploy --no-build --dir dist --site <id>` (netlify-cli 23 builds by default; `--no-build` skips it).
-- GitHub repo: `dizid/fluid` (public, archived 2026-09-15: read-only, the branch can't be pushed until it's unarchived).
-- Stripe: Marc's one shared live account. The guide checkout uses inline EUR prices (no Price IDs) and tags sessions with metadata `app=fluid-guide`; only those are served as PDFs. No webhook. Env var: `STRIPE_SECRET_KEY` (already on the Netlify site from the old paywall). Old price `price_1Sv9sS8gBja0qkMxhe47jQll` (AI coach, one-time) is no longer used.
+- GitHub repo: `dizid/fluid` (public; archived 2026-09-15, unarchived Nov 19 2026).
+- Stripe: Marc's one shared live account. The guide checkout uses inline EUR prices (no Price IDs) and tags sessions with metadata `app=fluid-guide`; only those are served as PDFs. No webhook. Env var: `STRIPE_SECRET_KEY` (already on the Netlify site from the old paywall; checked Nov 19: valid live key of the shared account, it is a secret var so the CLI shows it masked but functions do get it). Old price `price_1Sv9sS8gBja0qkMxhe47jQll` (AI coach, one-time) is no longer used.
 
 ## Design Changes
 
