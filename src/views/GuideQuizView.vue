@@ -27,6 +27,10 @@ const product = ref<ProductKey>('guide')
 const couples = ref(guideStore.answers.for === 'together')
 const isPaying = ref(false)
 const payError = ref('')
+// EU law: a digital download can only start at once if the buyer agrees, before
+// paying, to instant delivery and to losing the 14-day right of withdrawal (T-0633).
+const waiver = ref(false)
+const waiverBox = ref<HTMLInputElement | null>(null)
 const cancelled = computed(() => route.query.cancelled === '1')
 
 // A couple reading together gets the couples edition ticked by default.
@@ -62,13 +66,18 @@ function startOver() {
 async function buy() {
   const answers = guideStore.completeAnswers
   if (!answers || isPaying.value) return
+  if (!waiver.value) {
+    payError.value = 'Please tick the box above the button first.'
+    waiverBox.value?.focus()
+    return
+  }
   isPaying.value = true
   payError.value = ''
   try {
     const response = await fetch('/api/guide-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product: product.value, couples: couples.value, answers })
+      body: JSON.stringify({ product: product.value, couples: couples.value, answers, withdrawalWaiver: true })
     })
     const data = await response.json().catch(() => null)
     if (response.ok && data?.url) {
@@ -165,9 +174,15 @@ async function buy() {
             </span>
           </label>
 
+          <label class="waiver-option">
+            <input ref="waiverBox" v-model="waiver" type="checkbox" required @change="payError = ''" />
+            <span>I want my PDF right away and understand that I lose my 14-day right of withdrawal once the download starts.</span>
+          </label>
+
           <BaseButton full-width size="lg" :loading="isPaying" @click="buy">Get my PDF · {{ total }}</BaseButton>
           <p v-if="payError" class="error" role="alert">{{ payError }}</p>
           <p class="fine-print">One-time payment, secure checkout by Stripe. Instant download, no account, no subscription.</p>
+          <p class="fine-print">Sold by Dizid Web Development (Marc de Ruijter) · KvK 91308380 · VAT NL004437513B72 · <a href="mailto:dev@dizid.com">dev@dizid.com</a></p>
         </BaseCard>
 
         <section class="faq">
@@ -371,6 +386,28 @@ async function buy() {
 .couples-option {
   margin-bottom: var(--space-lg);
   border-style: dashed;
+}
+
+.waiver-option {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.waiver-option input {
+  margin-top: 2px;
+  accent-color: var(--color-primary);
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.fine-print a {
+  color: inherit;
+  text-decoration: underline;
 }
 
 .notice {

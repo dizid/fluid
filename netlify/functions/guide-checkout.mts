@@ -5,7 +5,9 @@ import { STRIPE_APP_TAG } from "../lib/stripe-tag.ts"
 
 /**
  * POST /api/guide-checkout (T-0594): starts a Stripe Checkout for the personal PDF
- * guide. Body: { product: 'guide' | 'deepdive', couples: boolean, answers: {...} }.
+ * guide. Body: { product: 'guide' | 'deepdive', couples: boolean, answers: {...},
+ * withdrawalWaiver: true }. The waiver (EU 14-day withdrawal right, T-0633) is
+ * required; the time it was given is saved on the session as proof of consent.
  * Prices come from src/guide/quiz.ts (inline price data, no Stripe Price IDs).
  * The quiz answers ride along as session metadata; guide-pdf.mts builds the PDF
  * from them once Stripe says the session is paid. No account, no database.
@@ -24,7 +26,7 @@ export default async (req: Request, _context: Context) => {
   const stripeSecretKey = Netlify.env.get("STRIPE_SECRET_KEY")
   if (!stripeSecretKey) return json({ error: "Payments are not available right now." }, 503)
 
-  let body: { product?: unknown; couples?: unknown; answers?: unknown }
+  let body: { product?: unknown; couples?: unknown; answers?: unknown; withdrawalWaiver?: unknown }
   try {
     body = (await req.json()) as typeof body
   } catch {
@@ -35,6 +37,9 @@ export default async (req: Request, _context: Context) => {
   const couples = body.couples === true
   if (!isProductKey(product) || !isValidAnswers(answers)) {
     return json({ error: "Please answer every question first." }, 400)
+  }
+  if (body.withdrawalWaiver !== true) {
+    return json({ error: "Please tick the box above the button first." }, 400)
   }
 
   const chosen = PRODUCTS[product]
@@ -60,7 +65,13 @@ export default async (req: Request, _context: Context) => {
   }
 
   // Only known keys/values reach Stripe (validated above).
-  const metadata: Record<string, string> = { app: STRIPE_APP_TAG, product, couples: couples ? "1" : "0" }
+  const metadata: Record<string, string> = {
+    app: STRIPE_APP_TAG,
+    product,
+    couples: couples ? "1" : "0",
+    // When the buyer ticked the instant-delivery / withdrawal waiver box.
+    withdrawal_waiver_at: new Date().toISOString()
+  }
   for (const q of QUIZ) metadata[q.key] = answers[q.key]
 
   const origin = new URL(req.url).origin
