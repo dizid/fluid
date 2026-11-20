@@ -4,6 +4,8 @@ import { onMounted, onUnmounted } from 'vue'
 interface Props {
   show: boolean
   title?: string
+  /** Name read out by screen readers when the modal has no visible title. */
+  label?: string
   closable?: boolean
   size?: 'sm' | 'md' | 'lg'
 }
@@ -44,7 +46,7 @@ onUnmounted(() => {
   <Teleport to="body">
     <Transition name="modal">
       <div v-if="show" class="modal-overlay" @click.self="handleClose">
-        <div class="modal" :class="`modal--${size}`" role="dialog" aria-modal="true">
+        <div class="modal" :class="`modal--${size}`" role="dialog" aria-modal="true" :aria-label="title || label">
           <header v-if="title || closable" class="modal__header">
             <h2 v-if="title" class="modal__title">{{ title }}</h2>
             <button

@@ -23,7 +23,7 @@ function handleDecline() {
 </script>
 
 <template>
-  <BaseModal :show="true" :closable="false" size="md">
+  <BaseModal :show="true" :closable="false" size="md" label="Age verification required">
     <div class="age-gate">
       <div class="age-gate__icon">
         <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">

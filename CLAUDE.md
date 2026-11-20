@@ -8,7 +8,7 @@
 - History: archived 2026-09-15 after the Firebase project `fluid-b6251` was deleted from the Google account (all logins broke). The open course no longer needs Firebase at all.
 - Marc's OK Nov 19 2026 (T-0619): keep the name Fluid, repo unarchived, site unpaused, open course live.
 - EU withdrawal waiver (Nov 19 2026, T-0633, Marc OK): a required tick box above "Get my PDF" (instant delivery; the 14-day withdrawal right is lost once the download starts), also enforced in `guide-checkout` (400 without `withdrawalWaiver: true`; consent time saved in Stripe metadata `withdrawal_waiver_at`). Seller line under the button: Dizid Web Development, KvK 91308380, VAT NL004437513B72, dev@dizid.com. No business address shown (none is public on Marc's other sites either).
-- Security headers (Nov 20 2026, T-0636): `netlify.toml` adds Permissions-Policy and a **report-only** CSP (blocks nothing; everything is same-site except Google Fonts). Violations: one line each in the `csp-report` function log (`/api/csp-report`). Enforce later by renaming the header to `Content-Security-Policy` once that log stays clean. A new outside host must be added to the policy; `node scripts/csp-hash.mjs` after a build flags inline scripts.
+- Security headers (Nov 20 2026, T-0636): `netlify.toml` adds Permissions-Policy and a **report-only** CSP (blocks nothing; everything is same-site, fonts are self-hosted since Nov 20 2026 via `@fontsource`, latin only, imported in `src/main.ts`). Violations: one line each in the `csp-report` function log (`/api/csp-report`). Enforce later by renaming the header to `Content-Security-Policy` once that log stays clean. A new outside host must be added to the policy; `node scripts/csp-hash.mjs` after a build flags inline scripts.
 
 ## Deployment
 
@@ -28,7 +28,9 @@ When modifying styles, layouts, colors, typography, or visual elements, describe
 - Vue 3 + Vite + Pinia (persisted state in localStorage), PWA
 - Netlify Functions: `guide-checkout` (POST /api/guide-checkout), `guide-pdf` (GET /api/guide-pdf?session_id=)
 - PDF: pdf-lib, standard fonts (`netlify/lib/pdf-builder.ts`); text blocks in `netlify/lib/guide-text.ts` (server-only), picked by `netlify/lib/guide-assembly.ts`
-- SEO: `build/prerender.ts` writes static HTML per page (title, description, canonical, JSON-LD, lesson text), sitemap.xml and robots.txt at build. Page list + `SITE_URL`/`SITE_NAME`: `src/seo/pages.ts`.
+- SEO: `build/prerender.ts` writes static HTML per page (title, description, canonical, JSON-LD, lesson text), sitemap.xml, robots.txt, llms.txt and 404.html at build. Page list + `SITE_URL`/`SITE_NAME`: `src/seo/pages.ts`.
+  - Pages are `dist/<path>.html` (not `<path>/index.html`, Nov 20 2026): Netlify serves them at `/<path>` with 200; `/<path>/` 301s to `/<path>`. The folder layout made every non-home URL a redirect to `/<path>/`, while sitemap/canonicals/app links use no slash.
+  - `netlify.toml`: `/guide/download` (Stripe return page, no static file) → `/index.html` 200; everything else unknown → `/404.html` with status 404 (noindex; the app still loads there and its router sends people to `/`). Before, unknown URLs answered 200 with the home page.
 
 ## Key Features
 
