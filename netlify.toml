@@ -20,6 +20,14 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Cross-Origin-Opener-Policy = "same-origin-allow-popups"
     Cross-Origin-Embedder-Policy = "unsafe-none"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    # Content policy in REPORT-ONLY mode (T-0636, Nov 20 2026): nothing is blocked yet;
+    # browsers send violations to /api/csp-report (Netlify function log). Enforce later by
+    # renaming the header to Content-Security-Policy once the log stays clean.
+    # Everything loads from this site except Google Fonts. The Stripe checkout is a full-page
+    # redirect (not covered by CSP); the paid PDF is a blob: download link (not covered either).
+    # Inline scripts: `node scripts/csp-hash.mjs` after a build lists any that need a hash here.
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; report-uri /api/csp-report"
 
 [[redirects]]
   from = "/*"
