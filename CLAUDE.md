@@ -8,6 +8,7 @@
 - History: archived 2026-09-15 after the Firebase project `fluid-b6251` was deleted from the Google account (all logins broke). The open course no longer needs Firebase at all.
 - Marc's OK Nov 19 2026 (T-0619): keep the name Fluid, repo unarchived, site unpaused, open course live.
 - EU withdrawal waiver (Nov 19 2026, T-0633, Marc OK): a required tick box above "Get my PDF" (instant delivery; the 14-day withdrawal right is lost once the download starts), also enforced in `guide-checkout` (400 without `withdrawalWaiver: true`; consent time saved in Stripe metadata `withdrawal_waiver_at`). Seller line under the button: Dizid Web Development, KvK 91308380, VAT NL004437513B72, dev@dizid.com. No business address shown (none is public on Marc's other sites either).
+- Security headers (Nov 20 2026, T-0636): `netlify.toml` adds Permissions-Policy and a **report-only** CSP (blocks nothing; everything is same-site except Google Fonts). Violations: one line each in the `csp-report` function log (`/api/csp-report`). Enforce later by renaming the header to `Content-Security-Policy` once that log stays clean. A new outside host must be added to the policy; `node scripts/csp-hash.mjs` after a build flags inline scripts.
 
 ## Deployment
 
