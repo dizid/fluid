@@ -30,6 +30,15 @@
     # Inline scripts: `node scripts/csp-hash.mjs` after a build lists any that need a hash here.
     Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; report-uri /api/csp-report"
 
+# Stripe return page: its link (?session_id=) downloads the buyer's personal PDF, which
+# holds their quiz answers. Never index it, never send the address on as a referrer.
+[[headers]]
+  for = "/guide/download"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "no-referrer"
+    Cache-Control = "no-store"
+
 # Every public page is a static file (build/prerender.ts writes <path>.html), served
 # directly. Rules below only apply when no file matches.
 
