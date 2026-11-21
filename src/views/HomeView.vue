@@ -24,6 +24,15 @@ function navigateToGuide() {
       <header class="home-header">
         <h1>Welcome to Fluid Intimacy</h1>
         <p>A free, private course on pleasure, arousal and connection. No account needed: your progress stays on this device.</p>
+        <!-- First-screen call to action (T-0636): on a phone the progress card used to fill the whole first screen -->
+        <div class="home-cta">
+          <RouterLink to="/modules" class="home-cta__primary">
+            {{ progress === 0 ? 'Start the free course' : 'Continue the course' }}
+          </RouterLink>
+          <RouterLink to="/guide" class="home-cta__secondary">
+            Or get your personal guide: 5 quick questions
+          </RouterLink>
+        </div>
       </header>
 
       <section class="progress-section">
@@ -106,6 +115,50 @@ function navigateToGuide() {
 .home-header p {
   color: var(--color-text-secondary);
   font-size: var(--font-size-lg);
+}
+
+/* First-screen call to action: one clear button + a quieter guide link.
+   Uses the darker brand green so white text and the link pass WCAG AA contrast. */
+.home-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+.home-cta__primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: var(--space-sm) var(--space-xl);
+  background-color: var(--color-primary-dark);
+  color: white;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-lg);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+.home-cta__primary:hover {
+  opacity: 0.9;
+}
+
+.home-cta__primary:focus-visible,
+.home-cta__secondary:focus-visible {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 3px;
+}
+
+.home-cta__secondary {
+  display: inline-block;
+  padding: var(--space-xs) 0;
+  color: var(--color-primary-dark);
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* Progress Section */
