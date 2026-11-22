@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 import BaseCard from '@/components/common/BaseCard.vue'
 import { useProgressStore } from '@/stores/progress.store'
 import { modules } from '@/content/modules'
 
-const router = useRouter()
 const progressStore = useProgressStore()
 
 function getModuleIcon(icon: string) {
@@ -24,10 +22,6 @@ function getModuleProgress(moduleId: string) {
   if (!module) return 0
   return Math.round((moduleProgress.completedLessons.length / module.lessons.length) * 100)
 }
-
-function navigateToModule(moduleId: string) {
-  router.push(`/modules/${moduleId}`)
-}
 </script>
 
 <template>
@@ -45,7 +39,7 @@ function navigateToModule(moduleId: string) {
           padding="lg"
           hoverable
           class="module-card"
-          @click="navigateToModule(module.id)"
+          :to="`/modules/${module.id}`"
         >
           <div class="module-card__icon" v-html="getModuleIcon(module.icon)" />
           <div class="module-card__content">

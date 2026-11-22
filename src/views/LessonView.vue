@@ -118,7 +118,8 @@ function getCalloutClass(variant: string) {
 
               <!-- Reflection -->
               <div v-else-if="block.type === 'reflection'" class="reflection">
-                <h4 class="reflection__title">
+                <!-- h3: lesson sections are h2/h3, so an h4 here skipped a level after an h2 -->
+                <h3 class="reflection__title">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z" />
                     <polyline points="14 2 14 8 20 8" />
@@ -126,7 +127,7 @@ function getCalloutClass(variant: string) {
                     <line x1="16" y1="17" x2="8" y2="17" />
                   </svg>
                   Reflection
-                </h4>
+                </h3>
                 <p class="reflection__prompt">{{ block.prompt }}</p>
                 <textarea
                   v-model="reflectionInputs[index]"
@@ -181,7 +182,10 @@ function getCalloutClass(variant: string) {
   gap: var(--space-sm);
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
-  margin-bottom: var(--space-xl);
+  /* 24 px tap height (the icon is 20 px); the negative margins cancel the
+     padding, so the button and the page below stay where they were */
+  padding: 2px 0;
+  margin: -2px 0 calc(var(--space-xl) - 2px);
   transition: color var(--transition-fast);
 }
 

@@ -1,21 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import BaseCard from '@/components/common/BaseCard.vue'
 import { useProgressStore } from '@/stores/progress.store'
 
-const router = useRouter()
 const progressStore = useProgressStore()
 
 const progress = computed(() => progressStore.overallProgress)
-
-function navigateToModules() {
-  router.push('/modules')
-}
-
-function navigateToGuide() {
-  router.push('/guide')
-}
 </script>
 
 <template>
@@ -46,7 +36,7 @@ function navigateToGuide() {
       <section class="quick-actions">
         <h2>Quick Actions</h2>
         <div class="actions-grid">
-          <BaseCard padding="lg" hoverable class="action-card" @click="navigateToModules">
+          <BaseCard padding="lg" hoverable class="action-card" to="/modules">
             <div class="action-icon">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
@@ -56,7 +46,7 @@ function navigateToGuide() {
             <p>Pick up where you left off in your modules.</p>
           </BaseCard>
 
-          <BaseCard padding="lg" hoverable class="action-card" @click="navigateToGuide">
+          <BaseCard padding="lg" hoverable class="action-card" to="/guide">
             <div class="action-icon">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

@@ -53,6 +53,10 @@
 }
 
 .header__link {
+  /* 24 px tap height on phones (text is 18 px): padding grows the tap area,
+     the equal negative margin keeps the layout exactly where it was */
+  padding: 3px 0;
+  margin: -3px 0;
   color: var(--color-text-secondary);
   text-decoration: none;
   font-size: var(--font-size-sm);

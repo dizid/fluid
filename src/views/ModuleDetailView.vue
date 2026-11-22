@@ -23,10 +23,6 @@ function isLessonCompleted(lessonId: string) {
   return progressStore.isLessonCompleted(moduleId.value, lessonId)
 }
 
-function navigateToLesson(lessonId: string) {
-  router.push(`/modules/${moduleId.value}/lessons/${lessonId}`)
-}
-
 function goBack() {
   router.push('/modules')
 }
@@ -56,7 +52,7 @@ function goBack() {
             hoverable
             class="lesson-card"
             :class="{ 'lesson-card--completed': isLessonCompleted(lesson.id) }"
-            @click="navigateToLesson(lesson.id)"
+            :to="`/modules/${moduleId}/lessons/${lesson.id}`"
           >
             <div class="lesson-card__number">
               <span v-if="isLessonCompleted(lesson.id)" class="lesson-card__check">
@@ -67,7 +63,7 @@ function goBack() {
               <span v-else>{{ index + 1 }}</span>
             </div>
             <div class="lesson-card__content">
-              <h3>{{ lesson.title }}</h3>
+              <h2>{{ lesson.title }}</h2>
               <p>{{ lesson.description }}</p>
               <span class="lesson-card__duration">{{ lesson.duration }} min</span>
             </div>
@@ -97,7 +93,10 @@ function goBack() {
   gap: var(--space-sm);
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
-  margin-bottom: var(--space-xl);
+  /* 24 px tap height (the icon is 20 px); the negative margins cancel the
+     padding, so the button and the page below stay where they were */
+  padding: 2px 0;
+  margin: -2px 0 calc(var(--space-xl) - 2px);
   transition: color var(--transition-fast);
 }
 
@@ -163,7 +162,8 @@ function goBack() {
   min-width: 0;
 }
 
-.lesson-card__content h3 {
+/* h2 (was h3): the page has an h1 and no h2, so h3 skipped a level; same look */
+.lesson-card__content h2 {
   font-size: var(--font-size-lg);
   margin-bottom: var(--space-xs);
 }
