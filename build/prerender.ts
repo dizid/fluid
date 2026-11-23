@@ -64,7 +64,8 @@ function renderBlock(block: LessonContent): string {
     case 'text':
       return `<p>${paragraph(block.content)}</p>`
     case 'callout':
-      return `<aside class="callout callout--${block.variant}"><p>${paragraph(block.content)}</p></aside>`
+      // "**term**" is bold, same as the app (LessonView calloutHtml); escaped first, so still safe HTML
+      return `<aside class="callout callout--${block.variant}"><p>${paragraph(block.content).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p></aside>`
     case 'reflection':
       return `<p><em>Reflection: ${escapeHtml(block.prompt)}</em></p>`
     case 'quiz':
