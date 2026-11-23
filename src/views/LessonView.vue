@@ -59,6 +59,14 @@ function goBackToModule() {
 function getCalloutClass(variant: string) {
   return `callout--${variant}`
 }
+
+/**
+ * Callout text (from our own lesson file, never user input) as HTML: "**term**" becomes
+ * bold and line breaks stay. Before, the asterisks showed up literally on the page.
+ */
+function calloutHtml(text: string) {
+  return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')
+}
 </script>
 
 <template>
@@ -113,7 +121,7 @@ function getCalloutClass(variant: string) {
                     <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                   </svg>
                 </div>
-                <div class="callout__content" v-html="block.content.replace(/\n/g, '<br>')" />
+                <div class="callout__content" v-html="calloutHtml(block.content)" />
               </div>
 
               <!-- Reflection -->

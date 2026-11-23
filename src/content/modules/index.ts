@@ -24,7 +24,8 @@ export const modules: Module[] = [
           {
             type: 'callout',
             variant: 'info',
-            content: 'Studies suggest 40-58% of women have experienced some form of female ejaculation in their lifetime. But whether you do or don\'t, both are completely normal.'
+            // T-0636: was "40-58%"; a systematic review (Pastor 2013) gives 10-54%, mostly from questionnaires
+            content: 'Surveys put the share of women who have experienced female ejaculation anywhere between 10% and 54%. But whether you do or don\'t, both are completely normal.'
           },
           {
             type: 'text',
@@ -34,6 +35,10 @@ export const modules: Module[] = [
             type: 'reflection',
             prompt: 'What brought you here today? What are you hoping to learn or discover?',
             placeholder: 'Take a moment to reflect...'
+          },
+          {
+            type: 'text',
+            content: 'Source: Pastor, "Female ejaculation orgasm vs. coital incontinence: a systematic review", The Journal of Sexual Medicine (2013).'
           }
         ]
       },
@@ -52,7 +57,8 @@ export const modules: Module[] = [
           { type: 'heading', content: 'The Clitoral Network', level: 3 },
           {
             type: 'text',
-            content: 'The visible part of the clitoris (the glans) is just the tip of the iceberg. Internally, the clitoris extends into two "legs" called crura that wrap around the vaginal canal, plus two bulbs that swell with arousal.'
+            // T-0636: the crura run along the pubic arch, the bulbs lie beside the vaginal opening (O'Connell 2005)
+            content: 'The visible part of the clitoris (the glans) is just the tip of the iceberg. Internally, the clitoris extends into two "legs" called crura that run back along the pubic bone, plus two bulbs on either side of the vaginal opening that swell with arousal.'
           },
           { type: 'heading', content: 'The Urethral Sponge', level: 3 },
           {
@@ -67,6 +73,10 @@ export const modules: Module[] = [
           {
             type: 'text',
             content: 'This area can be particularly sensitive when properly aroused. The key word is "properly" – rushing to this area without building arousal first often feels uncomfortable rather than pleasurable.'
+          },
+          {
+            type: 'text',
+            content: 'Source: O\'Connell, Sanjeevan and Hutson, "Anatomy of the clitoris", The Journal of Urology (2005).'
           }
         ]
       },
@@ -95,11 +105,14 @@ export const modules: Module[] = [
           {
             type: 'callout',
             variant: 'info',
-            content: '**Squirting**: A larger volume of dilute fluid that originates from the bladder, though its composition differs from urine and often occurs during intense arousal.'
+            // T-0636: was "its composition differs from urine"; Salama 2015 found urine-like levels of urea,
+            // creatinine and uric acid, with PSA in 5 of 7 women
+            content: '**Squirting**: A larger amount of fluid that comes from the bladder. Lab studies find it is essentially diluted urine, often with a little PSA from the Skene\'s glands mixed in. It usually happens during intense arousal.'
           },
           {
             type: 'text',
-            content: 'Many people experience a combination of both. Neither is "better" or more valid than the other.'
+            // T-0636: was "Many people experience a combination"; the review only says both may occur together
+            content: 'Both can happen at the same time. Neither is "better" or more valid than the other.'
           },
           { type: 'heading', content: 'The Sensation Myth', level: 3 },
           {
@@ -109,6 +122,10 @@ export const modules: Module[] = [
           {
             type: 'reflection',
             prompt: 'What surprised you most about what you\'ve learned so far?'
+          },
+          {
+            type: 'text',
+            content: 'Sources: Pastor, "Female ejaculation orgasm vs. coital incontinence: a systematic review", The Journal of Sexual Medicine (2013); Salama et al., "Nature and origin of squirting in female sexuality", The Journal of Sexual Medicine (2015); Pastor and Chmel, "Differential diagnostics of female sexual fluids: a narrative review", International Urogynecology Journal (2018).'
           }
         ]
       }
@@ -137,12 +154,15 @@ export const modules: Module[] = [
           {
             type: 'callout',
             variant: 'warning',
-            content: 'Performance pressure is the #1 barrier to sexual pleasure. When we focus on achieving a specific outcome, we activate our stress response – the opposite of what our bodies need.'
+            // T-0636: was "the #1 barrier" (no source for a ranking)
+            content: 'Performance pressure is a common barrier to sexual pleasure. When we focus on achieving a specific outcome, attention moves away from what we feel and toward judging how it is going.'
           },
           { type: 'heading', content: 'The Science of Letting Go', level: 3 },
           {
+            // T-0636: was "the sympathetic nervous system literally inhibits arousal"; Meston and Gorzalka 1995
+            // found intense exercise beforehand increased women's genital response to an erotic film
             type: 'text',
-            content: 'Sexual arousal requires activation of the parasympathetic nervous system – our "rest and digest" state. Stress, anxiety, and goal-fixation activate the sympathetic nervous system instead, which literally inhibits arousal.'
+            content: 'Arousal isn\'t only a "rest and digest" state. In one lab study, women who exercised hard just before watching an erotic film showed a stronger genital response, not a weaker one. What tends to get in the way is the mental side: worry, self-judgment and goal-fixation pull your attention away from the sensations that build arousal.'
           },
           {
             type: 'text',
@@ -157,6 +177,10 @@ export const modules: Module[] = [
             type: 'callout',
             variant: 'tip',
             content: '• What sensations feel pleasurable right now?\n• How does your breath feel?\n• What would feel good in this moment?\n• How connected do you feel to yourself or your partner?'
+          },
+          {
+            type: 'text',
+            content: 'Sources: Meston and Gorzalka, "The effects of sympathetic activation on physiological and subjective sexual arousal in women", Behaviour Research and Therapy (1995); Dove and Wiederman, "Cognitive distraction and women\'s sexual functioning", Journal of Sex & Marital Therapy (2000).'
           }
         ]
       },
@@ -170,7 +194,8 @@ export const modules: Module[] = [
           { type: 'heading', content: 'Arousal Takes Time', level: 2 },
           {
             type: 'text',
-            content: 'One of the biggest misconceptions is that arousal should happen quickly. In reality, full physiological arousal – where blood flow increases, tissues swell, and the body is truly ready – typically takes 20-40 minutes.'
+            // T-0636: was "typically takes 20-40 minutes" (no study gives a typical range)
+            content: 'One of the biggest misconceptions is that arousal should happen quickly. In reality, full physiological arousal – where blood flow increases, tissues swell, and the body is truly ready – often takes much longer than people expect, and it varies from person to person and from day to day.'
           },
           {
             type: 'callout',
@@ -420,7 +445,9 @@ export const modules: Module[] = [
           },
           {
             type: 'text',
-            content: 'The "need to pee" sensation that sometimes occurs during arousal is often a sign of pelvic floor tension. The instinct is to clench, but releasing (which feels counterintuitive) often leads to more pleasure.'
+            // T-0636: was "is often a sign of pelvic floor tension"; the urethral sponge surrounds the urethra, and in
+            // Salama 2015 the bladder refilled during arousal after it had been emptied
+            content: 'The "need to pee" sensation that sometimes occurs during arousal is common when the front wall of the vagina is touched: the urethral sponge surrounds the urethra, and the bladder can fill again during arousal even if you emptied it first. The instinct is to clench, but releasing (which feels counterintuitive) often leads to more pleasure.'
           },
           {
             type: 'callout',
