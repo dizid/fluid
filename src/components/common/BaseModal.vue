@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 
 interface Props {
   show: boolean
@@ -31,14 +31,39 @@ function handleKeydown(e: KeyboardEvent) {
   }
 }
 
+/**
+ * Keyboard + screen readers (T-0636): while the modal is open, the page behind it can't be
+ * reached. The app root (#app) is made inert (the modal is teleported to <body>, outside it)
+ * and focus starts on the modal itself, so the first Tab lands on the modal's first control.
+ * Before, Tab went through every link of the hidden page first (the 18+ gate: 4-6 presses,
+ * incl. quiz answers behind it) and fell back into that page after the last button.
+ */
+const modalRef = ref<HTMLElement | null>(null)
+
+function setBackgroundInert(on: boolean) {
+  const appRoot = document.getElementById('app')
+  if (appRoot) appRoot.inert = on
+}
+
+async function lockToModal(open: boolean) {
+  setBackgroundInert(open)
+  if (!open) return
+  await nextTick()
+  modalRef.value?.focus({ preventScroll: true })
+}
+
+watch(() => props.show, lockToModal)
+
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
   document.body.style.overflow = 'hidden'
+  if (props.show) lockToModal(true)
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
   document.body.style.overflow = ''
+  setBackgroundInert(false)
 })
 </script>
 
@@ -46,7 +71,7 @@ onUnmounted(() => {
   <Teleport to="body">
     <Transition name="modal">
       <div v-if="show" class="modal-overlay" @click.self="handleClose">
-        <div class="modal" :class="`modal--${size}`" role="dialog" aria-modal="true" :aria-label="title || label">
+        <div ref="modalRef" class="modal" :class="`modal--${size}`" role="dialog" aria-modal="true" :aria-label="title || label" tabindex="-1">
           <header v-if="title || closable" class="modal__header">
             <h2 v-if="title" class="modal__title">{{ title }}</h2>
             <button
@@ -92,6 +117,11 @@ onUnmounted(() => {
   max-height: 90vh;
   overflow: auto;
   width: 100%;
+}
+
+/* The modal box only takes focus so Tab starts inside it; its controls show the focus ring */
+.modal:focus {
+  outline: none;
 }
 
 .modal--sm {
