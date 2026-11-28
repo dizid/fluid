@@ -30,6 +30,7 @@ When modifying styles, layouts, colors, typography, or visual elements, describe
 ## Project Overview
 
 - Vue 3 + Vite + Pinia (persisted state in localStorage), PWA
+- Browser tests: `npm run test:e2e` (Playwright, one phone-sized Chromium, builds and previews on port 4175; `e2e/lesson.spec.ts`: 18+ gate → module → lesson → Continue → lesson ticked off after reload). Added Nov 28 2026 (T-0651)
 - Netlify Functions: `guide-checkout` (POST /api/guide-checkout), `guide-pdf` (GET /api/guide-pdf?session_id=)
 - PDF: pdf-lib, standard fonts (`netlify/lib/pdf-builder.ts`); text blocks in `netlify/lib/guide-text.ts` (server-only), picked by `netlify/lib/guide-assembly.ts`
 - SEO: `build/prerender.ts` writes static HTML per page (title, description, canonical, JSON-LD, lesson text), sitemap.xml, robots.txt, llms.txt and 404.html at build. Page list + `SITE_URL`/`SITE_NAME`: `src/seo/pages.ts`.
