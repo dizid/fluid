@@ -30,3 +30,7 @@ Thumbs.db
 
 # PWA
 dev-dist
+
+# Playwright
+test-results
+playwright-report
